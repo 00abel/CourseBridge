@@ -12,8 +12,8 @@ function ProtectedRoute({ children }) {
 
   if (loading) {
     return (
-      <div style={{ alignItems: 'center', backgroundColor: '#0f0f10', color: '#666',
-        display: 'flex', fontSize: '14px', justifyContent: 'center', minHeight: '100vh' }}>
+      <div style={{ alignItems: 'center', color: 'var(--muted)', display: 'flex',
+        fontSize: '14px', justifyContent: 'center', minHeight: '100vh' }}>
         Loading...
       </div>
     )
