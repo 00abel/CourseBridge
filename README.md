@@ -2,6 +2,8 @@
 
 Sync Canvas assignments into Notion.
 
+> Formerly called Canvas to Notion Sync. I renamed it in October 2026, so older links and the live URL still use the original name.
+
 CourseBridge pulls your assignments out of Canvas and writes them into a Notion database, all in the same format, so every class shows up in one place.
 
 Live app: [canvas-to-notion-sync.vercel.app](https://canvas-to-notion-sync.vercel.app)
@@ -85,8 +87,8 @@ You can sync as many times as you want. `SyncMap` remembers every assignment tha
 You'll need Node.js 18 or newer, a Canvas account with API access, and a Notion account with an integration.
 
 ```bash
-git clone https://github.com/00abel/canvas-to-notion-sync.git
-cd canvas-to-notion-sync
+git clone https://github.com/00abel/coursebridge.git
+cd coursebridge
 
 # Install dependencies
 cd server && npm install
@@ -127,7 +129,7 @@ To try "Connect with Canvas" without a real Canvas developer key, run the mock C
 ## Project structure
 
 ```
-canvas-to-notion-sync/
+coursebridge/
 ├── docs/
 │   └── CANVAS_OAUTH.md          # How Canvas OAuth is set up and tested
 ├── server/
