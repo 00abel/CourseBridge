@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth.jsx'
+import Brand from '../components/Brand.jsx'
 
 export default function AuthPage() {
   const [mode, setMode] = useState('login')  // 'login' or 'register'
@@ -32,165 +33,92 @@ export default function AuthPage() {
     }
   }
 
+  const isLogin = mode === 'login'
+
   return (
-    <div style={styles.page}>
-      <div style={styles.card}>
-        {/* Logo / header */}
-        <div style={styles.header}>
-          <div style={styles.logo}>⇄</div>
-          <h1 style={styles.title}>CourseBridge</h1>
-          <p style={styles.subtitle}>
-            {mode === 'login'
-              ? 'Sign in to sync your assignments'
-              : 'Create an account to get started'}
+    <div className="auth">
+      <aside className="auth-aside">
+        <Brand />
+
+        <div className="auth-pitch">
+          <h2>Every class, every due date, in one place.</h2>
+          <p>
+            CourseBridge pulls your assignments out of Canvas and keeps a Notion
+            database up to date, so you stop digging through five different course pages.
           </p>
+          <ol className="auth-steps">
+            <li><span>1</span>Connect your Canvas account</li>
+            <li><span>2</span>Point it at a Notion database</li>
+            <li><span>3</span>Hit sync whenever you want</li>
+          </ol>
         </div>
 
-        {/* Form */}
-        <form onSubmit={handleSubmit} style={styles.form}>
-          <div style={styles.field}>
-            <label style={styles.label}>Email</label>
-            <input
-              type="email"
-              value={email}
-              onChange={e => setEmail(e.target.value)}
-              style={styles.input}
-              placeholder="you@school.edu"
-              required
-            />
-          </div>
+        <p className="auth-foot">Canvas is read only. CourseBridge never changes anything there.</p>
 
-          <div style={styles.field}>
-            <label style={styles.label}>Password</label>
-            <input
-              type="password"
-              value={password}
-              onChange={e => setPassword(e.target.value)}
-              style={styles.input}
-              placeholder={mode === 'register' ? 'At least 8 characters' : '••••••••'}
-              required
-            />
-          </div>
+        <svg className="auth-arc" viewBox="0 0 400 240" fill="none" aria-hidden="true"
+          stroke="#fff" strokeWidth="6" strokeLinecap="round">
+          <path d="M20 220C80 80 150 30 200 30s120 50 180 190" />
+          <path d="M10 220h380M90 220v-90M145 220v-150M200 220v-190M255 220v-150M310 220v-90" />
+        </svg>
+      </aside>
 
-          {error && <div style={styles.error}>{error}</div>}
+      <main className="auth-main">
+        <div className="auth-form-wrap">
+          <Brand className="auth-mobile-brand" />
 
-          <button type="submit" style={styles.button} disabled={loading}>
-            {loading
-              ? 'Please wait...'
-              : mode === 'login' ? 'Sign in' : 'Create account'}
-          </button>
-        </form>
+          <h1>{isLogin ? 'Welcome back' : 'Create your account'}</h1>
+          <p className="lede">
+            {isLogin ? 'Sign in to sync your assignments.' : 'It takes about a minute to set up.'}
+          </p>
 
-        {/* Toggle between login/register */}
-        <p style={styles.toggle}>
-          {mode === 'login' ? "Don't have an account? " : 'Already have an account? '}
-          <button
-            style={styles.link}
-            onClick={() => { setMode(mode === 'login' ? 'register' : 'login'); setError('') }}
-          >
-            {mode === 'login' ? 'Sign up' : 'Sign in'}
-          </button>
-        </p>
-      </div>
+          <form onSubmit={handleSubmit} className="auth-form">
+            <div className="field">
+              <label className="label" htmlFor="email">Email</label>
+              <input
+                id="email"
+                type="email"
+                className="input"
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+                placeholder="you@school.edu"
+                autoComplete="email"
+                required
+              />
+            </div>
+
+            <div className="field">
+              <label className="label" htmlFor="password">Password</label>
+              <input
+                id="password"
+                type="password"
+                className="input"
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+                placeholder={isLogin ? 'Your password' : 'At least 8 characters'}
+                autoComplete={isLogin ? 'current-password' : 'new-password'}
+                required
+              />
+            </div>
+
+            {error && <div className="notice notice-error" role="alert">{error}</div>}
+
+            <button type="submit" className="btn btn-primary btn-block" disabled={loading}>
+              {loading && <span className="spinner" />}
+              {loading ? 'Please wait' : isLogin ? 'Sign in' : 'Create account'}
+            </button>
+          </form>
+
+          <p className="auth-switch">
+            {isLogin ? "Don't have an account? " : 'Already have an account? '}
+            <button
+              className="link-btn"
+              onClick={() => { setMode(isLogin ? 'register' : 'login'); setError('') }}
+            >
+              {isLogin ? 'Sign up' : 'Sign in'}
+            </button>
+          </p>
+        </div>
+      </main>
     </div>
   )
-}
-
-const styles = {
-  page: {
-    minHeight: '100vh',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#0f0f10',
-    fontFamily: "'DM Sans', 'Helvetica Neue', sans-serif",
-    padding: '20px',
-  },
-  card: {
-    backgroundColor: '#1a1a1d',
-    border: '1px solid #2a2a2d',
-    borderRadius: '16px',
-    padding: '48px 40px',
-    width: '100%',
-    maxWidth: '400px',
-  },
-  header: {
-    textAlign: 'center',
-    marginBottom: '32px',
-  },
-  logo: {
-    fontSize: '32px',
-    marginBottom: '12px',
-  },
-  title: {
-    color: '#f0f0f0',
-    fontSize: '22px',
-    fontWeight: '600',
-    margin: '0 0 8px',
-    letterSpacing: '-0.3px',
-  },
-  subtitle: {
-    color: '#888',
-    fontSize: '14px',
-    margin: 0,
-  },
-  form: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '16px',
-  },
-  field: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '6px',
-  },
-  label: {
-    color: '#aaa',
-    fontSize: '13px',
-    fontWeight: '500',
-  },
-  input: {
-    backgroundColor: '#111',
-    border: '1px solid #333',
-    borderRadius: '8px',
-    color: '#f0f0f0',
-    fontSize: '15px',
-    padding: '10px 14px',
-    outline: 'none',
-    transition: 'border-color 0.15s',
-  },
-  error: {
-    backgroundColor: '#2a1515',
-    border: '1px solid #5a2020',
-    borderRadius: '8px',
-    color: '#f87171',
-    fontSize: '13px',
-    padding: '10px 14px',
-  },
-  button: {
-    backgroundColor: '#5865f2',
-    border: 'none',
-    borderRadius: '8px',
-    color: '#fff',
-    cursor: 'pointer',
-    fontSize: '15px',
-    fontWeight: '600',
-    padding: '12px',
-    marginTop: '4px',
-    transition: 'opacity 0.15s',
-  },
-  toggle: {
-    color: '#666',
-    fontSize: '14px',
-    marginTop: '24px',
-    textAlign: 'center',
-  },
-  link: {
-    background: 'none',
-    border: 'none',
-    color: '#5865f2',
-    cursor: 'pointer',
-    fontSize: '14px',
-    padding: 0,
-  },
 }

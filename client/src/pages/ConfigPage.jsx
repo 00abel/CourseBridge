@@ -8,6 +8,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { api } from '../lib/api.js'
+import TopBar from '../components/TopBar.jsx'
 
 // Messages for the ?canvas=error&reason=... flag the backend sends back
 const OAUTH_ERRORS = {
@@ -17,6 +18,12 @@ const OAUTH_ERRORS = {
   exchange_failed: 'Canvas approved the login, but the token exchange failed. Please try again.',
   canvas_error: 'Canvas returned an error during authorization.',
 }
+
+const NOTION_COLUMNS = [
+  ['Name', 'Title'], ['Course', 'Select'], ['Due Date', 'Date'], ['Status', 'Select'],
+  ['Assignment Type', 'Select'], ['Points', 'Number'], ['Canvas ID', 'Text'],
+  ['Canvas URL', 'URL'], ['Description', 'Text'], ['Last Synced', 'Date'],
+]
 
 export default function ConfigPage() {
   const navigate = useNavigate()
@@ -108,183 +115,164 @@ export default function ConfigPage() {
   }
 
   if (!info) {
-    return <div style={{ ...styles.page, color: '#666' }}>{message || 'Loading...'}</div>
+    return (
+      <>
+        <TopBar />
+        <main className="page"><p className="hint">{message || 'Loading...'}</p></main>
+      </>
+    )
   }
 
   const { canvas, notion, oauthAvailable } = info
 
   return (
-    <div style={styles.page}>
-      <div style={styles.container}>
-        <div style={styles.header}>
-          <button style={styles.back} onClick={() => navigate('/dashboard')}>← Back</button>
-          <h1 style={styles.title}>Connect your accounts</h1>
-          <p style={styles.subtitle}>Tokens are encrypted before they are stored and only used to sync your assignments.</p>
+    <>
+      <TopBar />
+
+      <main className="page" style={{ maxWidth: 680 }}>
+        <button className="back" onClick={() => navigate('/dashboard')}>← Back to dashboard</button>
+        <div className="page-head">
+          <h1>Connect your accounts</h1>
+          <p>Your tokens are encrypted before they're saved and only used to sync assignments.</p>
         </div>
 
         {message && (
-          <div style={{ ...styles.message, ...(status === 'error' ? styles.messageError : styles.messageSuccess), marginBottom: 24 }}>
+          <div className={`notice ${status === 'error' ? 'notice-error' : 'notice-success'}`}
+            style={{ marginBottom: 20 }} role="status">
             {message}
           </div>
         )}
 
-        <form onSubmit={handleSave} style={styles.form}>
-          {/* ── Canvas ── */}
-          <section style={styles.section}>
-            <div style={styles.sectionHeader}>
-              <h2 style={styles.sectionTitle}>Canvas LMS</h2>
-            </div>
-
-            {canvas.connected && (
-              <div style={styles.connectedRow}>
-                <div>
-                  <div style={styles.connectedLabel}>● Connected</div>
-                  <div style={styles.connectedDetail}>
-                    {canvas.authType === 'oauth'
-                      ? `Signed in with Canvas${canvas.userName ? ` as ${canvas.userName}` : ''}`
-                      : `Personal token for ${canvas.baseUrl}`}
-                  </div>
-                </div>
-                <button type="button" style={styles.secondaryBtn} onClick={disconnectCanvas} disabled={canvasBusy}>
-                  Disconnect
-                </button>
+        <form onSubmit={handleSave} className="stack">
+          <section className="card">
+            <div className="step-head">
+              <span className="step-num">1</span>
+              <div>
+                <h2 className="card-title">Canvas</h2>
+                <p className="card-desc">Where your assignments come from. CourseBridge only reads from it.</p>
               </div>
-            )}
-
-            {oauthAvailable && (
-              <button type="button" style={styles.canvasBtn} onClick={connectWithCanvas} disabled={canvasBusy}>
-                {canvasBusy ? 'Opening Canvas...' : canvas.authType === 'oauth' ? 'Reconnect with Canvas' : 'Connect with Canvas'}
-              </button>
-            )}
-
-            {oauthAvailable && (
-              <button type="button" style={styles.linkBtn} onClick={() => setShowTokenForm(v => !v)}>
-                {showTokenForm ? 'Hide personal token option' : 'Or use a personal access token instead'}
-              </button>
-            )}
-
-            {showTokenForm && (
-              <>
-                <p style={styles.sectionDesc}>Get a token in Canvas: Account → Settings → New Access Token</p>
-                <div style={styles.field}>
-                  <label style={styles.label}>Canvas URL</label>
-                  <input
-                    name="canvasBaseUrl"
-                    value={form.canvasBaseUrl}
-                    onChange={handleChange}
-                    style={styles.input}
-                    placeholder="https://canvas.university.edu"
-                  />
-                </div>
-                <div style={styles.field}>
-                  <label style={styles.label}>Access Token</label>
-                  <input
-                    name="canvasToken"
-                    value={form.canvasToken}
-                    onChange={handleChange}
-                    style={styles.input}
-                    type="password"
-                    placeholder={canvas.connected ? 'Leave blank to keep the current connection' : 'Paste your Canvas token'}
-                  />
-                </div>
-              </>
-            )}
-          </section>
-
-          {/* ── Notion ── */}
-          <section style={styles.section}>
-            <div style={styles.sectionHeader}>
-              <h2 style={styles.sectionTitle}>Notion</h2>
-              <p style={styles.sectionDesc}>
-                Create an integration at notion.so/my-integrations, then share your database with it.
-              </p>
             </div>
 
-            <div style={styles.field}>
-              <label style={styles.label}>Integration Token</label>
-              <input
-                name="notionToken"
-                value={form.notionToken}
-                onChange={handleChange}
-                style={styles.input}
-                type="password"
-                placeholder={notion.connected ? 'Saved. Leave blank to keep it.' : 'secret_...'}
-              />
-            </div>
+            <div className="step-body">
+              {canvas.connected && (
+                <div className="connected">
+                  <div>
+                    <div className="connected-label">Connected</div>
+                    <div className="connected-detail">
+                      {canvas.authType === 'oauth'
+                        ? `Signed in with Canvas${canvas.userName ? ` as ${canvas.userName}` : ''}`
+                        : `Personal token for ${canvas.baseUrl}`}
+                    </div>
+                  </div>
+                  <button type="button" className="btn btn-ghost btn-sm" onClick={disconnectCanvas} disabled={canvasBusy}>
+                    Disconnect
+                  </button>
+                </div>
+              )}
 
-            <div style={styles.field}>
-              <label style={styles.label}>Database ID</label>
-              <input
-                name="notionDbId"
-                value={form.notionDbId}
-                onChange={handleChange}
-                style={styles.input}
-                placeholder="32-character ID from your database URL"
-              />
-              <span style={styles.hint}>Open your Notion database and copy the ID from the URL (the part after the last /)</span>
+              {oauthAvailable && (
+                <button type="button" className="btn btn-canvas btn-block" onClick={connectWithCanvas} disabled={canvasBusy}>
+                  {canvasBusy ? 'Opening Canvas...' : canvas.authType === 'oauth' ? 'Reconnect with Canvas' : 'Connect with Canvas'}
+                </button>
+              )}
+
+              {oauthAvailable && (
+                <button type="button" className="link-btn" style={{ alignSelf: 'flex-start' }}
+                  onClick={() => setShowTokenForm(v => !v)}>
+                  {showTokenForm ? 'Hide the personal token option' : 'Use a personal access token instead'}
+                </button>
+              )}
+
+              {showTokenForm && (
+                <>
+                  <div className="field">
+                    <label className="label" htmlFor="canvasBaseUrl">Canvas URL</label>
+                    <input
+                      id="canvasBaseUrl"
+                      name="canvasBaseUrl"
+                      className="input"
+                      value={form.canvasBaseUrl}
+                      onChange={handleChange}
+                      placeholder="https://canvas.university.edu"
+                    />
+                  </div>
+                  <div className="field">
+                    <label className="label" htmlFor="canvasToken">Access token</label>
+                    <input
+                      id="canvasToken"
+                      name="canvasToken"
+                      className="input"
+                      type="password"
+                      value={form.canvasToken}
+                      onChange={handleChange}
+                      placeholder={canvas.connected ? 'Leave blank to keep the current connection' : 'Paste your Canvas token'}
+                    />
+                    <span className="hint">In Canvas, open Account, then Settings, and click New Access Token.</span>
+                  </div>
+                </>
+              )}
             </div>
           </section>
 
-          {/* Required columns reminder */}
-          <div style={styles.reminder}>
-            <p style={styles.reminderTitle}>Your Notion database needs these columns:</p>
-            <div style={styles.columns}>
-              {[
-                ['Name', 'Title'], ['Course', 'Select'], ['Due Date', 'Date'], ['Status', 'Select'],
-                ['Assignment Type', 'Select'], ['Points', 'Number'], ['Canvas ID', 'Text'],
-                ['Canvas URL', 'URL'], ['Description', 'Text'], ['Last Synced', 'Date'],
-              ].map(([name, type]) => (
-                <div key={name} style={styles.column}>
-                  <span style={styles.columnName}>{name}</span>
-                  <span style={styles.columnType}>{type}</span>
-                </div>
-              ))}
+          <section className="card">
+            <div className="step-head">
+              <span className="step-num">2</span>
+              <div>
+                <h2 className="card-title">Notion</h2>
+                <p className="card-desc">
+                  Where your assignments go. Create an integration at notion.so/my-integrations,
+                  then share your database with it.
+                </p>
+              </div>
             </div>
-          </div>
 
-          <button
-            type="submit"
-            style={{ ...styles.button, opacity: status === 'loading' ? 0.6 : 1 }}
-            disabled={status === 'loading'}
-          >
-            {status === 'loading' ? 'Verifying connections...' : 'Save and verify'}
+            <div className="step-body">
+              <div className="field">
+                <label className="label" htmlFor="notionToken">Integration token</label>
+                <input
+                  id="notionToken"
+                  name="notionToken"
+                  className="input"
+                  type="password"
+                  value={form.notionToken}
+                  onChange={handleChange}
+                  placeholder={notion.connected ? 'Saved. Leave blank to keep it.' : 'secret_...'}
+                />
+              </div>
+
+              <div className="field">
+                <label className="label" htmlFor="notionDbId">Database ID</label>
+                <input
+                  id="notionDbId"
+                  name="notionDbId"
+                  className="input"
+                  value={form.notionDbId}
+                  onChange={handleChange}
+                  placeholder="32 character ID from your database URL"
+                />
+                <span className="hint">Open the database in Notion and copy the part of the URL after the last slash.</span>
+              </div>
+
+              <details className="columns-help">
+                <summary>Which columns does the database need?</summary>
+                <div className="columns">
+                  {NOTION_COLUMNS.map(([name, type]) => (
+                    <div key={name} className="column">
+                      <span>{name}</span>
+                      <code>{type}</code>
+                    </div>
+                  ))}
+                </div>
+              </details>
+            </div>
+          </section>
+
+          <button type="submit" className="btn btn-primary btn-block" disabled={status === 'loading'}>
+            {status === 'loading' && <span className="spinner" />}
+            {status === 'loading' ? 'Checking your connections' : 'Save and verify'}
           </button>
         </form>
-      </div>
-    </div>
+      </main>
+    </>
   )
-}
-
-const styles = {
-  page: { minHeight: '100vh', backgroundColor: '#0f0f10', fontFamily: "'DM Sans', 'Helvetica Neue', sans-serif", color: '#f0f0f0', padding: '40px 20px' },
-  container: { maxWidth: '600px', margin: '0 auto' },
-  header: { marginBottom: '32px' },
-  back: { background: 'none', border: 'none', color: '#666', cursor: 'pointer', fontSize: '14px', padding: '0 0 16px', display: 'block' },
-  title: { fontSize: '28px', fontWeight: '700', margin: '0 0 8px', letterSpacing: '-0.5px' },
-  subtitle: { color: '#666', fontSize: '14px', margin: 0 },
-  form: { display: 'flex', flexDirection: 'column', gap: '24px' },
-  section: { backgroundColor: '#1a1a1d', border: '1px solid #2a2a2d', borderRadius: '12px', padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px' },
-  sectionHeader: { marginBottom: '4px' },
-  sectionTitle: { fontSize: '16px', fontWeight: '600', margin: '0 0 4px', color: '#f0f0f0' },
-  sectionDesc: { color: '#666', fontSize: '13px', margin: 0 },
-  connectedRow: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px', backgroundColor: '#0d2010', border: '1px solid #1a4020', borderRadius: '8px', padding: '12px 14px' },
-  connectedLabel: { color: '#4ade80', fontSize: '13px', fontWeight: '600' },
-  connectedDetail: { color: '#9ca3af', fontSize: '13px', marginTop: '2px' },
-  canvasBtn: { backgroundColor: '#e13f2b', border: 'none', borderRadius: '8px', color: '#fff', cursor: 'pointer', fontSize: '15px', fontWeight: '600', padding: '12px' },
-  secondaryBtn: { background: 'none', border: '1px solid #3a3a3d', borderRadius: '6px', color: '#ccc', cursor: 'pointer', fontSize: '13px', padding: '6px 12px', whiteSpace: 'nowrap' },
-  linkBtn: { alignSelf: 'flex-start', background: 'none', border: 'none', color: '#5865f2', cursor: 'pointer', fontSize: '13px', padding: 0 },
-  field: { display: 'flex', flexDirection: 'column', gap: '6px' },
-  label: { color: '#aaa', fontSize: '13px', fontWeight: '500' },
-  input: { backgroundColor: '#111', border: '1px solid #333', borderRadius: '8px', color: '#f0f0f0', fontSize: '14px', padding: '10px 14px', outline: 'none' },
-  hint: { color: '#555', fontSize: '12px' },
-  reminder: { backgroundColor: '#111820', border: '1px solid #1e3048', borderRadius: '12px', padding: '20px' },
-  reminderTitle: { color: '#7ab3e0', fontSize: '13px', fontWeight: '600', margin: '0 0 12px' },
-  columns: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px' },
-  column: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#0d1520', borderRadius: '6px', padding: '6px 10px' },
-  columnName: { color: '#ddd', fontSize: '12px' },
-  columnType: { color: '#556', fontSize: '11px', fontFamily: 'monospace' },
-  message: { borderRadius: '8px', fontSize: '14px', padding: '12px 16px' },
-  messageSuccess: { backgroundColor: '#0d2010', border: '1px solid #1a4020', color: '#4ade80' },
-  messageError: { backgroundColor: '#2a1515', border: '1px solid #5a2020', color: '#f87171' },
-  button: { backgroundColor: '#5865f2', border: 'none', borderRadius: '8px', color: '#fff', cursor: 'pointer', fontSize: '15px', fontWeight: '600', padding: '13px', transition: 'opacity 0.15s' },
 }
