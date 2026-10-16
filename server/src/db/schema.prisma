@@ -26,17 +26,24 @@ model User {
   syncLogs SyncLog[]
 }
 
-// Stores Canvas + Notion credentials per user
-// We encrypt tokens before saving (see authService.js)
+// Stores Canvas + Notion credentials per user.
+// Tokens are encrypted before saving (see services/crypto.js).
+// Fields are optional so a user can connect Canvas and Notion in separate steps.
 model Config {
-  id            String @id @default(cuid())
-  userId        String @unique
-  user          User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id            String  @id @default(cuid())
+  userId        String  @unique
+  user          User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  canvasToken   String  // Canvas personal access token
-  canvasBaseUrl String  // e.g. https://canvas.school.edu
-  notionToken   String  // Notion integration token
-  notionDbId    String  // ID of the target Notion database
+  // How Canvas is connected: "token" (pasted personal token) or "oauth" (Connect with Canvas)
+  canvasAuthType       String?
+  canvasBaseUrl        String?    // e.g. https://canvas.school.edu
+  canvasToken          String?    // personal token, or OAuth access token (expires after 1 hour)
+  canvasRefreshToken   String?    // OAuth only: used to get a new access token without logging in again
+  canvasTokenExpiresAt DateTime?  // OAuth only: when the current access token stops working
+  canvasUserName       String?    // OAuth only: display name Canvas returns, shown in the UI
+
+  notionToken   String?  // Notion integration token
+  notionDbId    String?  // ID of the target Notion database
 }
 
 // Maps a Canvas assignment ID → Notion page ID

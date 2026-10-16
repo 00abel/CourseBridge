@@ -9,6 +9,8 @@
 import pLimit from 'p-limit'
 import { fetchAllAssignments } from './canvasService.js'
 import { findExistingPage, createNotionPage, updateNotionPage } from './notionService.js'
+import { getCanvasCredentials } from './canvasOAuth.js'
+import { decrypt } from './crypto.js'
 import prisma from '../db/db.js'
 
 /**
@@ -24,7 +26,15 @@ export async function runSync(userId) {
     throw new Error('No configuration found. Please set up your Canvas and Notion credentials first.')
   }
 
-  const { canvasToken, canvasBaseUrl, notionToken, notionDbId } = config
+  // Works for both personal tokens and OAuth.
+  // For OAuth this refreshes the 1-hour access token automatically when needed.
+  const { baseUrl: canvasBaseUrl, token: canvasToken } = await getCanvasCredentials(config)
+
+  const notionToken = decrypt(config.notionToken)
+  const notionDbId = config.notionDbId
+  if (!notionToken || !notionDbId) {
+    throw new Error('Notion is not connected. Add your Notion details in Settings first.')
+  }
 
   // 2. Fetch all assignments from Canvas
   let assignments
