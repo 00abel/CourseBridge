@@ -1,4 +1,4 @@
-// routes/sync.js — Trigger sync and view sync history
+// routes/sync.js: trigger sync and view sync history
 
 import { Router } from 'express'
 import { requireAuth } from '../services/auth.js'

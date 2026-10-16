@@ -1,4 +1,4 @@
-// App.jsx — Top-level routing. Protects routes that require login.
+// App.jsx: top-level routing. Protects routes that require login.
 
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider, useAuth } from './hooks/useAuth.jsx'

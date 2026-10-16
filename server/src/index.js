@@ -1,4 +1,4 @@
-// index.js — The main server file. Sets up Express and mounts all routes.
+// index.js: the main server file. Sets up Express and mounts all routes.
 
 import express from 'express'
 import cors from 'cors'
@@ -33,7 +33,7 @@ app.use('/api/config', configRoutes)
 app.use('/api/sync', syncRoutes)
 app.use('/api/canvas/oauth', canvasOAuthRoutes)
 
-// Health check endpoint — useful for deployment platforms
+// Health check endpoint, used by deployment platforms
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() })
 })

@@ -130,7 +130,7 @@ export default function Dashboard() {
           {syncResult && (
             <div style={styles.resultBox}>
               <span style={styles.resultGreen}>✓ Sync complete</span>
-              &nbsp;—&nbsp;
+              &nbsp;·&nbsp;
               {syncResult.created} created, {syncResult.updated} updated
               {syncResult.failed > 0 && (
                 <span style={styles.resultRed}>, {syncResult.failed} failed</span>
