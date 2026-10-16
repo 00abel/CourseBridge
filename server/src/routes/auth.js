@@ -1,4 +1,4 @@
-// routes/auth.js — Register and login endpoints
+// routes/auth.js: register and login endpoints
 
 import { Router } from 'express'
 import prisma from '../db/db.js'
@@ -84,7 +84,7 @@ router.post('/login', async (req, res) => {
  * Used by the frontend to check if a token is still valid.
  */
 router.get('/me', async (req, res) => {
-  // requireAuth middleware is NOT used here — we handle it manually
+  // requireAuth middleware is NOT used here. We handle it manually
   // so we can return a friendly response instead of 401
   const authHeader = req.headers.authorization
   if (!authHeader) return res.status(401).json({ error: 'Not logged in.' })

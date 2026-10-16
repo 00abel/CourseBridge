@@ -1,4 +1,4 @@
-// routes/config.js — Save and retrieve a user's Canvas + Notion settings.
+// routes/config.js: save and retrieve a user's Canvas + Notion settings.
 //
 // Canvas can be connected two ways:
 //   - "Connect with Canvas" (OAuth), handled in routes/canvasOAuth.js

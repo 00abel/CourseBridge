@@ -18,7 +18,7 @@ function makeNotionClient(token) {
  * column names. If you rename a column in Notion, update it here too.
  *
  * Each property type (title, rich_text, select, date, etc.) has a different
- * structure in the Notion API — this is the trickiest part of Notion integration.
+ * structure in the Notion API. This is the trickiest part of Notion integration.
  */
 function assignmentToNotionProperties(assignment) {
   const props = {
@@ -43,7 +43,7 @@ function assignmentToNotionProperties(assignment) {
       number: assignment.pointsPossible,
     },
 
-    // Canvas ID stored here for deduplication — never shown to user
+    // Canvas ID stored here for deduplication and never shown to the user
     'Canvas ID': {
       rich_text: [{ text: { content: assignment.canvasId } }],
     },
@@ -57,7 +57,7 @@ function assignmentToNotionProperties(assignment) {
     },
   }
 
-  // Due Date is optional — Canvas assignments may not have one
+  // Due Date is optional because Canvas assignments may not have one
   if (assignment.dueDate) {
     props['Due Date'] = {
       date: { start: assignment.dueDate },
@@ -78,7 +78,7 @@ function assignmentToNotionProperties(assignment) {
  * Looks up an existing Notion page by Canvas ID.
  * Returns the page ID if found, null if not.
  *
- * This is how we detect duplicates — we filter the Notion database
+ * This is how we detect duplicates. We filter the Notion database
  * by the "Canvas ID" property we stored when we first created the page.
  */
 export async function findExistingPage(token, databaseId, canvasId) {
@@ -115,7 +115,7 @@ export async function createNotionPage(token, databaseId, assignment) {
 
 /**
  * Updates an existing Notion page with fresh data from Canvas.
- * We only update properties — we don't touch any notes the user
+ * We only update properties and don't touch any notes the user
  * may have added to the page body.
  */
 export async function updateNotionPage(token, pageId, assignment) {

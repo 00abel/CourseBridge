@@ -1,4 +1,4 @@
-// pages/AuthPage.jsx — Login and registration form
+// pages/AuthPage.jsx: login and registration form
 
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
