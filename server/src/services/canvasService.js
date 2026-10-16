@@ -1,6 +1,6 @@
 // canvasService.js
 // Responsible for talking to the Canvas LMS API.
-// Canvas uses "personal access tokens" for auth — no OAuth needed.
+// Canvas calls use either a personal access token or an OAuth token (see canvasOAuth.js).
 
 import axios from 'axios'
 
@@ -80,7 +80,7 @@ export async function fetchAssignmentsForCourse(baseUrl, token, courseId, course
       { per_page: 50, order_by: 'due_at' }
     )
   } catch (err) {
-    // Some courses don't allow assignment listing — skip them gracefully
+    // Some courses don't allow assignment listing, so we skip them
     if (err.response?.status === 401 || err.response?.status === 403) {
       console.warn(`Skipping course ${courseId}: no permission`)
       return []
@@ -94,7 +94,7 @@ export async function fetchAssignmentsForCourse(baseUrl, token, courseId, course
 
 /**
  * Converts a raw Canvas assignment object into our clean, consistent format.
- * This is the normalization step — Canvas returns a huge messy object,
+ * This is the normalization step. Canvas returns a huge messy object,
  * we only keep what we need.
  */
 function normalizeAssignment(raw, courseId, courseName) {

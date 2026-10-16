@@ -9,6 +9,8 @@
 import pLimit from 'p-limit'
 import { fetchAllAssignments } from './canvasService.js'
 import { findExistingPage, createNotionPage, updateNotionPage } from './notionService.js'
+import { getCanvasCredentials } from './canvasOAuth.js'
+import { decrypt } from './crypto.js'
 import prisma from '../db/db.js'
 
 /**
@@ -24,7 +26,15 @@ export async function runSync(userId) {
     throw new Error('No configuration found. Please set up your Canvas and Notion credentials first.')
   }
 
-  const { canvasToken, canvasBaseUrl, notionToken, notionDbId } = config
+  // Works for both personal tokens and OAuth.
+  // For OAuth this refreshes the 1-hour access token automatically when needed.
+  const { baseUrl: canvasBaseUrl, token: canvasToken } = await getCanvasCredentials(config)
+
+  const notionToken = decrypt(config.notionToken)
+  const notionDbId = config.notionDbId
+  if (!notionToken || !notionDbId) {
+    throw new Error('Notion is not connected. Add your Notion details in Settings first.')
+  }
 
   // 2. Fetch all assignments from Canvas
   let assignments
@@ -85,7 +95,7 @@ export async function runSync(userId) {
  * Decides whether to create a new page or update an existing one.
  */
 async function syncOneAssignment(userId, assignment, notionToken, notionDbId) {
-  // Check our local database first — fastest lookup
+  // Check our local database first because it's the fastest lookup
   const existingMap = await prisma.syncMap.findUnique({
     where: {
       userId_canvasId: { userId, canvasId: assignment.canvasId },
@@ -93,7 +103,7 @@ async function syncOneAssignment(userId, assignment, notionToken, notionDbId) {
   })
 
   if (existingMap) {
-    // We've synced this assignment before — update the existing Notion page
+    // We've synced this assignment before, so update the existing Notion page
     await updateNotionPage(notionToken, existingMap.notionPageId, assignment)
 
     // Update the lastSynced timestamp
@@ -102,11 +112,11 @@ async function syncOneAssignment(userId, assignment, notionToken, notionDbId) {
       data: { lastSynced: new Date() },
     })
   } else {
-    // First time seeing this assignment — check Notion too (in case local DB was wiped)
+    // First time seeing this assignment, so check Notion too (in case local DB was wiped)
     const existingNotionPageId = await findExistingPage(notionToken, notionDbId, assignment.canvasId)
 
     if (existingNotionPageId) {
-      // Found in Notion but not in our DB — update and re-record the mapping
+      // Found in Notion but not in our DB, so update and re-record the mapping
       await updateNotionPage(notionToken, existingNotionPageId, assignment)
       await prisma.syncMap.create({
         data: {
@@ -117,7 +127,7 @@ async function syncOneAssignment(userId, assignment, notionToken, notionDbId) {
         },
       })
     } else {
-      // Truly new assignment — create it in Notion
+      // Brand new assignment, so create it in Notion
       const newPageId = await createNotionPage(notionToken, notionDbId, assignment)
       await prisma.syncMap.create({
         data: {

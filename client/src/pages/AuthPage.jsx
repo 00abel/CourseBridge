@@ -1,4 +1,4 @@
-// pages/AuthPage.jsx — Login and registration form
+// pages/AuthPage.jsx: login and registration form
 
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -38,7 +38,7 @@ export default function AuthPage() {
         {/* Logo / header */}
         <div style={styles.header}>
           <div style={styles.logo}>⇄</div>
-          <h1 style={styles.title}>Canvas → Notion</h1>
+          <h1 style={styles.title}>CourseBridge</h1>
           <p style={styles.subtitle}>
             {mode === 'login'
               ? 'Sign in to sync your assignments'

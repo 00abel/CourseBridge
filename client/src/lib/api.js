@@ -49,6 +49,16 @@ export const api = {
       request('/config', { method: 'POST', body: JSON.stringify(config) }),
   },
 
+  canvasOAuth: {
+    // Is "Connect with Canvas" available on this server?
+    status: () => request('/canvas/oauth/status'),
+
+    // Returns { url } for the Canvas login + consent page
+    start: () => request('/canvas/oauth/start'),
+
+    disconnect: () => request('/canvas/oauth', { method: 'DELETE' }),
+  },
+
   sync: {
     run: () => request('/sync', { method: 'POST' }),
 
