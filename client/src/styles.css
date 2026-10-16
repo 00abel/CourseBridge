@@ -1,23 +1,23 @@
 /* styles.css: design tokens and shared components for every page. */
 
 :root {
-  --bg: #f6f4ef;
+  --bg: #fafafa;
   --surface: #ffffff;
-  --surface-2: #faf9f6;
-  --ink: #1c1b19;
-  --muted: #6b675f;
-  --faint: #9a968d;
-  --border: #e4e0d7;
-  --accent: #1f5e57;
-  --accent-hover: #184b45;
-  --accent-soft: #e4efec;
+  --surface-2: #f4f4f4;
+  --ink: #111111;
+  --muted: #666666;
+  --faint: #9a9a9a;
+  --border: #e5e5e5;
+  --accent: #111111;
+  --accent-hover: #2b2b2b;
+  --accent-soft: #f0f0f0;
   --accent-ink: #ffffff;
   --success: #2f7d4f;
-  --success-soft: #e5f2ea;
+  --success-soft: #e6f3eb;
   --danger: #b23a2e;
   --danger-soft: #f8e6e3;
   --canvas-red: #d4392b;
-  --shadow: 0 1px 2px rgba(28, 27, 25, 0.04), 0 4px 16px rgba(28, 27, 25, 0.04);
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 4px 16px rgba(0, 0, 0, 0.04);
   --radius: 14px;
   --font-body: 'Inter', system-ui, -apple-system, sans-serif;
   --font-display: 'Fraunces', Georgia, serif;
@@ -26,19 +26,19 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #111312;
-    --surface: #191c1b;
-    --surface-2: #151817;
-    --ink: #ecebe6;
-    --muted: #a19d94;
-    --faint: #6f6c66;
-    --border: #2a2e2c;
-    --accent: #5fb3a6;
-    --accent-hover: #74c2b5;
-    --accent-soft: #1d2f2c;
-    --accent-ink: #0e1a18;
+    --bg: #0b0b0b;
+    --surface: #151515;
+    --surface-2: #1c1c1c;
+    --ink: #f2f2f2;
+    --muted: #a3a3a3;
+    --faint: #6b6b6b;
+    --border: #2a2a2a;
+    --accent: #f2f2f2;
+    --accent-hover: #d9d9d9;
+    --accent-soft: #232323;
+    --accent-ink: #0b0b0b;
     --success: #6cc08a;
-    --success-soft: #18291f;
+    --success-soft: #16261c;
     --danger: #e57d70;
     --danger-soft: #2e1b18;
     --shadow: none;
@@ -131,13 +131,15 @@ button { font: inherit; }
 .link-btn {
   background: none;
   border: none;
-  color: var(--accent);
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: 3px;
   cursor: pointer;
   font-size: 14px;
   font-weight: 500;
   padding: 0;
 }
-.link-btn:hover { text-decoration: underline; }
+.link-btn:hover { color: var(--muted); }
 
 .spinner {
   animation: spin 0.7s linear infinite;
@@ -167,7 +169,7 @@ button { font: inherit; }
 }
 .input::placeholder { color: var(--faint); }
 .input:focus {
-  border-color: var(--accent);
+  border-color: var(--ink);
   box-shadow: 0 0 0 3px var(--accent-soft);
   outline: none;
 }
@@ -207,8 +209,8 @@ button { font: inherit; }
 }
 
 .auth-aside {
-  background: var(--accent);
-  color: #f2f7f6;
+  background: #0b0b0b;
+  color: #f2f2f2;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -218,7 +220,7 @@ button { font: inherit; }
 }
 
 @media (prefers-color-scheme: dark) {
-  .auth-aside { background: #16302c; }
+  .auth-aside { background: #000; border-right: 1px solid var(--border); }
 }
 
 .auth-aside .brand { color: #fff; }
@@ -235,7 +237,7 @@ button { font: inherit; }
   margin-bottom: 16px;
 }
 
-.auth-pitch p { color: rgba(242, 247, 246, 0.78); font-size: 16px; margin: 0; }
+.auth-pitch p { color: rgba(242, 242, 242, 0.78); font-size: 16px; margin: 0; }
 
 .auth-steps {
   display: grid;
@@ -248,7 +250,8 @@ button { font: inherit; }
 .auth-steps li { align-items: center; display: flex; font-size: 15px; gap: 12px; }
 
 .auth-steps span {
-  background: rgba(255, 255, 255, 0.14);
+  background: rgba(108, 192, 138, 0.18);
+  color: #6cc08a;
   border-radius: 50%;
   display: grid;
   flex: none;
@@ -261,14 +264,14 @@ button { font: inherit; }
 
 .auth-arc {
   bottom: -120px;
-  opacity: 0.12;
+  opacity: 0.1;
   pointer-events: none;
   position: absolute;
   right: -80px;
   width: 520px;
 }
 
-.auth-foot { color: rgba(242, 247, 246, 0.6); font-size: 13px; position: relative; }
+.auth-foot { color: rgba(242, 242, 242, 0.6); font-size: 13px; position: relative; }
 
 .auth-main {
   align-items: center;
@@ -342,8 +345,9 @@ button { font: inherit; }
 
 .setup-banner {
   align-items: center;
-  background: var(--accent-soft);
-  border: 1px solid transparent;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--success);
   border-radius: var(--radius);
   display: flex;
   gap: 16px;
@@ -417,7 +421,7 @@ button { font: inherit; }
   text-align: center;
 }
 .pill-new { background: var(--success-soft); color: var(--success); }
-.pill-upd { background: var(--accent-soft); color: var(--accent); }
+.pill-upd { background: var(--accent-soft); color: var(--ink); }
 .pill-fail { background: var(--danger-soft); color: var(--danger); }
 .pill-zero { color: var(--faint); }
 
@@ -447,9 +451,9 @@ button { font: inherit; }
 .step-head { align-items: flex-start; display: flex; gap: 14px; margin-bottom: 18px; }
 
 .step-num {
-  background: var(--accent-soft);
+  background: var(--ink);
   border-radius: 50%;
-  color: var(--accent);
+  color: var(--bg);
   display: grid;
   flex: none;
   font-size: 14px;
@@ -492,7 +496,7 @@ button { font: inherit; }
 .column code { color: var(--muted); font-size: 12px; }
 
 details.columns-help summary {
-  color: var(--accent);
+  color: var(--ink);
   cursor: pointer;
   font-size: 14px;
   font-weight: 500;
