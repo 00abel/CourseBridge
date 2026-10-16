@@ -1,4 +1,4 @@
-// db.js — Creates a single shared Prisma client instance.
+// db.js: creates a single shared Prisma client instance.
 // We import this everywhere we need to touch the database.
 
 import { PrismaClient } from '@prisma/client'

@@ -62,7 +62,7 @@ export default function Dashboard() {
     <div style={styles.page}>
       {/* Navbar */}
       <nav style={styles.nav}>
-        <div style={styles.navBrand}>⇄ Canvas → Notion</div>
+        <div style={styles.navBrand}>⇄ CourseBridge</div>
         <div style={styles.navActions}>
           <span style={styles.navEmail}>{user?.email}</span>
           <button style={styles.navBtn} onClick={() => navigate('/config')}>Settings</button>
@@ -110,7 +110,7 @@ export default function Dashboard() {
             <h2 style={styles.syncTitle}>Sync assignments</h2>
             <p style={styles.syncDesc}>
               Pulls all assignments from your Canvas courses and pushes them into Notion.
-              Safe to run multiple times — existing assignments are updated, not duplicated.
+              You can run this as often as you like. Assignments already in Notion get updated instead of added again.
             </p>
           </div>
 
@@ -130,7 +130,7 @@ export default function Dashboard() {
           {syncResult && (
             <div style={styles.resultBox}>
               <span style={styles.resultGreen}>✓ Sync complete</span>
-              &nbsp;—&nbsp;
+              &nbsp;·&nbsp;
               {syncResult.created} created, {syncResult.updated} updated
               {syncResult.failed > 0 && (
                 <span style={styles.resultRed}>, {syncResult.failed} failed</span>

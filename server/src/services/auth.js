@@ -1,4 +1,4 @@
-// auth.js — JWT-based authentication helpers.
+// auth.js: JWT based authentication helpers.
 // When a user logs in, we give them a JWT token.
 // They include this token in every API request.
 // We verify it here before allowing access to protected routes.
@@ -11,7 +11,7 @@ const JWT_EXPIRES_IN = '7d'  // Tokens last 7 days
 
 /**
  * Creates a JWT token for a user.
- * The token contains the user's ID — we use this to look them up later.
+ * The token contains the user's ID, which we use to look them up later.
  */
 export function createToken(userId) {
   return jwt.sign({ userId }, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN })
