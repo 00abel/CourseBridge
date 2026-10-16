@@ -7,6 +7,9 @@ import 'dotenv/config'
 import authRoutes from './routes/auth.js'
 import configRoutes from './routes/config.js'
 import syncRoutes from './routes/sync.js'
+import canvasOAuthRoutes from './routes/canvasOAuth.js'
+import { encrypt } from './services/crypto.js'
+import { isOAuthEnabled } from './services/canvasOAuth.js'
 
 const app = express()
 const PORT = process.env.PORT || 3001
@@ -28,6 +31,7 @@ app.use(cors({
 app.use('/api/auth', authRoutes)
 app.use('/api/config', configRoutes)
 app.use('/api/sync', syncRoutes)
+app.use('/api/canvas/oauth', canvasOAuthRoutes)
 
 // Health check endpoint — useful for deployment platforms
 app.get('/health', (req, res) => {
@@ -44,7 +48,16 @@ app.use((err, req, res, next) => {
 
 // ── Start ──────────────────────────────────────────────────────────────────
 
+// Fail fast if the encryption key is missing, instead of failing on the first save
+try {
+  encrypt('startup-check')
+} catch (err) {
+  console.error(`✖ ${err.message}`)
+  process.exit(1)
+}
+
 app.listen(PORT, () => {
   console.log(`✓ Server running on http://localhost:${PORT}`)
   console.log(`  Environment: ${process.env.NODE_ENV || 'development'}`)
+  console.log(`  Canvas OAuth: ${isOAuthEnabled() ? 'enabled' : 'off (no developer key configured)'}`)
 })
