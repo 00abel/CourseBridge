@@ -4,7 +4,7 @@
 
 CourseBridge brings assignments from all your Canvas courses into one Notion database. That way, you can see what’s due without jumping between classes.
 
-**[Open CourseBridge](https://canvas-to-notion-sync.vercel.app)**
+**[Open CourseBridge](https://coursebridgesync.vercel.app)**
 
 > **One thing to know:** Syncing is manual for now. Just click **Sync now** when you want to refresh your assignments. I’m planning to add automatic syncing later.
 
@@ -26,7 +26,7 @@ That’s why I built CourseBridge. I wanted one place to see my assignments with
 
 ### 1. Create your CourseBridge account
 
-Go to the [CourseBridge website](https://canvas-to-notion-sync.vercel.app) and create an account.
+Go to the [CourseBridge website](https://coursebridgesync.vercel.app) and create an account.
 
 ### 2. Connect Canvas
 
