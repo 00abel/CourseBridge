@@ -2,6 +2,8 @@
 
 CourseBridge syncs Canvas assignments into a Notion database. It saves assignment details in one place and updates existing pages when another sync runs.
 
+This is the new home for CourseBridge. I cleaned up the project structure, fixed a few issues, and updated the documentation before moving it here. The previous repository is archived for reference.
+
 [Open CourseBridge](https://coursebridgesync.vercel.app)
 
 ## Why I built it
