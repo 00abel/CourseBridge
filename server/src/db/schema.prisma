@@ -1,0 +1,66 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  passwordHash String
+  createdAt    DateTime  @default(now())
+
+  config   Config?
+  syncMaps SyncMap[]
+  syncLogs SyncLog[]
+}
+
+// stores canvas + notion credentials per user.
+// tokens are encrypted before saving (see services/crypto.js).
+// canvas fields are cleared when the user disconnects
+model Config {
+  id            String  @id @default(cuid())
+  userId        String  @unique
+  user          User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  canvasAuthType       String?
+  canvasBaseUrl        String?    // e.g. https://canvas.school.edu
+  canvasToken          String?    // personal access token
+
+  notionToken   String?  // notion integration token
+  notionDbId    String?  // id of the target notion database
+}
+
+// maps a canvas assignment id → notion page id
+model SyncMap {
+  id           String   @id @default(cuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  canvasId     String   // canvas assignment id (e.g. "12345")
+  notionDbId   String?  // null for mappings saved before destination tracking
+  canvasBaseUrl String?
+  notionPageId String   // notion page id we created/updated
+  courseId     String   // canvas course id
+  lastSynced   DateTime @updatedAt
+
+  @@unique([userId, canvasId]) // one mapping per user per assignment
+}
+
+// a log entry for each sync run
+model SyncLog {
+  id       String   @id @default(cuid())
+  userId   String
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  notionDbId String?
+  canvasBaseUrl String?
+
+  syncedAt DateTime @default(now())
+  created  Int      // how many new notion pages were created
+  updated  Int      // how many existing pages were updated
+  failed   Int      // how many assignments failed to sync
+  errors   String?  // json string with error details (if any)
+}
